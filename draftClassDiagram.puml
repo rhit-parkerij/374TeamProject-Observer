@@ -1,0 +1,167 @@
+@startuml
+
+skinparam linetype ortho
+
+package "Presentation" #LightBlue {
+    class LinterDisplay {
+        + main(args: String[]): void
+        + run(): void
+    }
+    
+    class ConsoleReporter {
+        + report(issues: List<LintIssue>): void
+    }
+}
+
+package "Domain" #LightGreen {
+    
+    class LinterEngine {
+        - checks: List<LintCheck>
+        + addCheck(check: LintCheck): void
+        + analyze(classInfo: ClassInfo): List<LintIssue>
+    }
+    
+    class CheckFilter {
+        + isEnabled(check: LintCheck): boolean
+    }
+    
+    enum CheckCategory {
+        STYLE
+        PRINCIPLE
+        PATTERN
+    }
+    
+    class ResultManager {
+        + addResult(className: String, issues: List<LintIssue>): void
+        + getSummary(): LintSummary
+    }
+    
+    class LintSummary {
+        - errorCount: int
+        - warningCount: int
+    }
+    
+    class LintIssue {
+        - checkName: String
+        - severity: Severity
+        - message: String
+        + LintIssue(checkName, severity, message, location)
+    }
+    
+    enum Severity {
+        ERROR
+        WARNING
+        INFO
+    }
+    
+    class ClassInfo {
+        + isAbstract(): boolean
+        + isInterface(): boolean
+    }
+    
+    class FieldInfo {
+        + isStatic(): boolean
+        + isFinal(): boolean
+    }
+    
+    class MethodInfo {
+        + getInstructionCount(): int
+        + getMethodCalls(): List<MethodCall>
+    }
+    
+    class MethodCall {
+        - owner: String
+        - name: String
+    }
+    
+    interface LintCheck {
+        + check(classInfo: ClassInfo): List<LintIssue>
+    }
+    
+    interface StyleCheck extends LintCheck
+    interface PrincipleCheck extends LintCheck
+    interface PatternCheck extends LintCheck
+    
+    ' Style Checks
+    class ConfigurableMethodLengthCheck implements StyleCheck {
+        - WARNING_THRESHOLD: int = 50
+        - ERROR_THRESHOLD: int = 100
+        + check(classInfo: ClassInfo): List<LintIssue>
+    }
+    
+    class FieldNamingCheck implements StyleCheck {
+        - UPPER_SNAKE_CASE: Pattern
+        - CAMEL_CASE: Pattern
+        + check(classInfo: ClassInfo): List<LintIssue>
+    }
+    
+    class Style3 implements StyleCheck
+    class Style4 implements StyleCheck
+    
+    ' Principle Checks
+    class ProgramToInterfaceCheck implements PrincipleCheck {
+        + check(classInfo: ClassInfo): List<LintIssue>
+    }
+    
+    class SingleResponsibilityCheck implements PrincipleCheck {
+        - MAX_FIELDS: int = 10
+        - MAX_METHODS: int = 20
+        + check(classInfo: ClassInfo): List<LintIssue>
+    }
+    
+    class Principle3 implements PrincipleCheck
+    class Principle4 implements PrincipleCheck
+    
+    ' Pattern Detectors
+    class AdapterPatternDetector implements PatternCheck {
+        + check(classInfo: ClassInfo): List<LintIssue>
+    }
+    
+    class TemplateMethodDetector implements PatternCheck {
+        + check(classInfo: ClassInfo): List<LintIssue>
+    }
+    
+    class Pattern3 implements PatternCheck
+    class Pattern4 implements PatternCheck
+}
+
+package "Data Source" #LightCoral {
+    class ClassFileReader {
+        + loadClass(className: String): ClassInfo
+    }
+}
+
+package "ASM Library" #DDDDDD {
+    class ClassNode
+    class FieldNode
+    class MethodNode
+}
+
+LinterDisplay --> LinterEngine
+LinterDisplay --> ConsoleReporter
+ConsoleReporter ..> LintIssue
+
+LinterEngine --> ClassFileReader
+LinterEngine --> CheckFilter
+LinterEngine --> ResultManager
+LinterEngine ..> "*" LintCheck
+
+LintCheck ..> ClassInfo
+LintCheck ..> LintIssue
+
+ResultManager --> "*" LintIssue
+ResultManager --> LintSummary
+
+ClassInfo ..> "*" FieldInfo
+ClassInfo ..> "*" MethodInfo
+MethodInfo ..> "*" MethodCall
+LintIssue ..> Severity
+CheckFilter ..> CheckCategory
+
+ClassFileReader --> ClassInfo
+ClassInfo --> ClassNode
+FieldInfo --> FieldNode
+MethodInfo --> MethodNode
+
+
+@enduml
