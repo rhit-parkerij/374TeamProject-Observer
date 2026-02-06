@@ -18,11 +18,8 @@ package "Domain" #LightGreen {
     class LinterEngine {
         - checks: List<LintCheck>
         + addCheck(check: LintCheck): void
+        + removeCheck(check: LintCheck): void
         + analyze(classInfo: ClassInfo): List<LintIssue>
-    }
-    
-    class CheckFilter {
-        + isEnabled(check: LintCheck): boolean
     }
     
     enum CheckCategory {
@@ -55,16 +52,27 @@ package "Domain" #LightGreen {
     }
     
     class ClassInfo {
+        - classNode: ClassNode
+        - fields: List<FieldInfo>
+        - methods: List<MethodInfo>
+        + getName(): String
+        + getInterfaces(): List<String>
         + isAbstract(): boolean
         + isInterface(): boolean
+        + isPublic(): boolean
+        + getFields(): List<FieldInfo>
+        + getMethods(): List<MethodInfo>
     }
     
     class FieldInfo {
+
+        - fieldNode: FieldNode
         + isStatic(): boolean
         + isFinal(): boolean
     }
     
     class MethodInfo {
+        - methodNode: MethodNode
         + getInstructionCount(): int
         + getMethodCalls(): List<MethodCall>
     }
@@ -84,9 +92,10 @@ package "Domain" #LightGreen {
     
     ' Style Checks
     class ConfigurableMethodLengthCheck implements StyleCheck {
-        - WARNING_THRESHOLD: int = 50
-        - ERROR_THRESHOLD: int = 100
+        - maxInstructions: int
+        + ConfigurableMethodLengthCheck(maxInstructions: int)
         + check(classInfo: ClassInfo): List<LintIssue>
+        + setMaxInstructions(max: int): void
     }
     
     class FieldNamingCheck implements StyleCheck {
@@ -100,12 +109,15 @@ package "Domain" #LightGreen {
     
     ' Principle Checks
     class ProgramToInterfaceCheck implements PrincipleCheck {
+        - concreteTypes: Map<String, String>
+        + isConcreteCollection(typeName: String): boolean
         + check(classInfo: ClassInfo): List<LintIssue>
     }
     
     class SingleResponsibilityCheck implements PrincipleCheck {
-        - MAX_FIELDS: int = 10
-        - MAX_METHODS: int = 20
+        - MAX_FIELDS: int 
+        - MAX_METHODS: int
+        - maxPublicMethods: int
         + check(classInfo: ClassInfo): List<LintIssue>
     }
     
@@ -115,10 +127,15 @@ package "Domain" #LightGreen {
     ' Pattern Detectors
     class AdapterPatternDetector implements PatternCheck {
         + check(classInfo: ClassInfo): List<LintIssue>
+        - implmentsInterface(classInfo: ClassInfo): boolean
+        - hasAdapteeField(classInfo: ClassInfo): boolean
+        - delegatesToAdaptee(classInfo: ClassInfo): boolean
     }
     
     class TemplateMethodDetector implements PatternCheck {
         + check(classInfo: ClassInfo): List<LintIssue>
+        - findAbstractMethods(classInfo: ClassInfo): Set<String>
+        - findTemplateMethods(classInfo: ClassInfo): List<String>
     }
     
     class Pattern3 implements PatternCheck
@@ -128,6 +145,8 @@ package "Domain" #LightGreen {
 package "Data Source" #LightCoral {
     class ClassFileReader {
         + loadClass(className: String): ClassInfo
+        + loadClassFromFile(filePath: String): ClassInfo
+        + loadClasses(classNames: List<String>): List<ClassInfo>
     }
 }
 
@@ -135,6 +154,7 @@ package "ASM Library" #DDDDDD {
     class ClassNode
     class FieldNode
     class MethodNode
+    class ClassReader
 }
 
 LinterDisplay --> LinterEngine
@@ -142,7 +162,6 @@ LinterDisplay --> ConsoleReporter
 ConsoleReporter ..> LintIssue
 
 LinterEngine --> ClassFileReader
-LinterEngine --> CheckFilter
 LinterEngine --> ResultManager
 LinterEngine ..> "*" LintCheck
 
@@ -156,9 +175,10 @@ ClassInfo ..> "*" FieldInfo
 ClassInfo ..> "*" MethodInfo
 MethodInfo ..> "*" MethodCall
 LintIssue ..> Severity
-CheckFilter ..> CheckCategory
+LinterEngine ..> CheckCategory
 
 ClassFileReader --> ClassInfo
+ClassFileReader --> ClassReader
 ClassInfo --> ClassNode
 FieldInfo --> FieldNode
 MethodInfo --> MethodNode
