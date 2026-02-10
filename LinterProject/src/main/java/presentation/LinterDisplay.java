@@ -58,6 +58,7 @@ public class LinterDisplay {
         // PATTERN DETECTORS
         checks.add(new AdapterPatternDetector());
         checks.add(new TemplateMethodDetector());
+        checks.add(new StrategyPatternDetector());
         return checks;
     }
 
