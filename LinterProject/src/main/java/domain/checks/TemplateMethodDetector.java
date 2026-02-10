@@ -67,7 +67,7 @@ public class TemplateMethodDetector implements PatternCheck {
                         getName(),
                         Severity.INFO,
                         String.format("Template Method pattern detected: '%s' is a template method calling abstract steps: %s in %s",
-                            method.getName(), calledAbstractMethods, classInfo.getName() + "." + method.getName() + "()")
+                            method.getName(), calledAbstractMethods), classInfo.getName() + "." + method.getName() + "()"
                     ));
                 }
             }
@@ -91,7 +91,7 @@ public class TemplateMethodDetector implements PatternCheck {
                         getName(),
                         Severity.INFO,
                         String.format("Possible Template Method pattern: '%s' calls abstract steps: %s (consider making it final) in %s",
-                            method.getName(), calledAbstractMethods, classInfo.getName() + "." + method.getName() + "()")
+                            method.getName(), calledAbstractMethods), classInfo.getName() + "." + method.getName() + "()"
                     ));
                 }
             }

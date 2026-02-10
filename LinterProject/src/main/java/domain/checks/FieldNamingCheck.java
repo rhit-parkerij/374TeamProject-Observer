@@ -62,23 +62,20 @@ public class FieldNamingCheck implements StyleCheck {
                         String.format(
                             "Constant '%s' should be UPPER_SNAKE_CASE (e.g., MAX_VALUE, DEFAULT_SIZE). " +
                             "Java convention: constants use uppercase letters with underscores in %s",
-                            fieldName, location
-                        )
+                            fieldName), location
+                        
                     ));
                 }
             } else {
                 // Regular fields should be camelCase
                 if (!CAMEL_CASE.matcher(fieldName).matches()) {
-                    // Determine what's wrong with the name
-                    String suggestion = getSuggestion(fieldName);
                     
                     issues.add(new LintIssue(
                         getName(),
                         Severity.WARNING,
                         String.format(
                             "Field '%s' should be camelCase (e.g., firstName, totalCount). %s in %s",
-                            fieldName, suggestion, location
-                        )
+                            fieldName), location
                     ));
                 }
             }

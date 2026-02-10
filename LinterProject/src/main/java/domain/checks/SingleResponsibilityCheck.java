@@ -78,9 +78,10 @@ public class SingleResponsibilityCheck implements PrincipleCheck {
             issues.add(new LintIssue(
                 getName(),
                 Severity.WARNING,
-                "Class has " + fieldCount + " fields (recommended max: " + maxFields + "). " +
+                String.format("Class has " + fieldCount + " fields (recommended max: " + maxFields + "). " +
                 "This may indicate the class has too many responsibilities. " +
-                "Consider extracting related fields into separate classes."
+                "Consider extracting related fields into separate classes."), 
+                className
             ));
         }
 
@@ -89,9 +90,10 @@ public class SingleResponsibilityCheck implements PrincipleCheck {
             issues.add(new LintIssue(
                 getName(),
                 Severity.WARNING,
-                "Class has " + methodCount + " methods (recommended max: " + maxMethods + "). " +
+                String.format("Class has " + methodCount + " methods (recommended max: " + maxMethods + "). " +
                 "This may indicate the class is doing too much. " +
-                "Consider splitting into multiple focused classes."
+                "Consider splitting into multiple focused classes."), 
+                className
             ));
         }
 
@@ -100,9 +102,10 @@ public class SingleResponsibilityCheck implements PrincipleCheck {
             issues.add(new LintIssue(
                 getName(),
                 Severity.WARNING,
-                "Class has " + publicMethodCount + " public methods (recommended max: " + maxPublicMethods + "). " +
+                String.format("Class has " + publicMethodCount + " public methods (recommended max: " + maxPublicMethods + "). " +
                 "The public interface is too large. " +
-                "Consider using the Interface Segregation Principle to split the interface."
+                "Consider using the Interface Segregation Principle to split the interface."), 
+                className
             ));
         }
 
@@ -111,9 +114,10 @@ public class SingleResponsibilityCheck implements PrincipleCheck {
             issues.add(new LintIssue(
                 getName(),
                 Severity.ERROR,
-                "Class appears to be a 'God Class' with " + fieldCount + " fields and " + methodCount + " methods. " +
+                String.format("Class appears to be a 'God Class' with " + fieldCount + " fields and " + methodCount + " methods. " +
                 "This strongly suggests multiple responsibilities. " +
-                "Refactor by identifying distinct responsibilities and extracting them into separate classes."
+                "Refactor by identifying distinct responsibilities and extracting them into separate classes."),
+                className
             ));
         }
 
