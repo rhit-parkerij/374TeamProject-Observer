@@ -126,7 +126,7 @@ public class LinterDisplay {
                     handleFileInput();
                     break;
                 case "4":
-                    handleCheckConfiguration();
+                     handleCheckConfiguration();
                     break;
                 case "5":
                     showAsmDetails = !showAsmDetails;
@@ -294,7 +294,6 @@ public class LinterDisplay {
         }
 
         reporter.report(localResult.getAllIssues());
-        System.out.println("\n" + localResult.getSummary());
     }
 
     // ═══════════════════════════════════════════════════════════════════

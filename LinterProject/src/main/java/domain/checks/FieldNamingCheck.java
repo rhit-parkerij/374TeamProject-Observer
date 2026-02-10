@@ -62,7 +62,7 @@ public class FieldNamingCheck implements StyleCheck {
                         String.format(
                             "Constant '%s' should be UPPER_SNAKE_CASE (e.g., MAX_VALUE, DEFAULT_SIZE). " +
                             "Java convention: constants use uppercase letters with underscores in %s",
-                            fieldName), location
+                            fieldName, fieldName), location
                         
                     ));
                 }
