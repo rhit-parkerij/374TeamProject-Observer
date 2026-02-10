@@ -3,6 +3,7 @@ package domain.checks;
 import domain.ClassInfo;
 import domain.FieldInfo;
 import domain.MethodInfo;
+import domain.Severity;
 import domain.checks.LintIssue;
 
 import java.util.ArrayList;
@@ -76,11 +77,10 @@ public class SingleResponsibilityCheck implements PrincipleCheck {
         if (fieldCount > maxFields) {
             issues.add(new LintIssue(
                 getName(),
-                LintIssue.Severity.WARNING,
+                Severity.WARNING,
                 "Class has " + fieldCount + " fields (recommended max: " + maxFields + "). " +
                 "This may indicate the class has too many responsibilities. " +
-                "Consider extracting related fields into separate classes.",
-                className
+                "Consider extracting related fields into separate classes."
             ));
         }
 
@@ -88,11 +88,10 @@ public class SingleResponsibilityCheck implements PrincipleCheck {
         if (methodCount > maxMethods) {
             issues.add(new LintIssue(
                 getName(),
-                LintIssue.Severity.WARNING,
+                Severity.WARNING,
                 "Class has " + methodCount + " methods (recommended max: " + maxMethods + "). " +
                 "This may indicate the class is doing too much. " +
-                "Consider splitting into multiple focused classes.",
-                className
+                "Consider splitting into multiple focused classes."
             ));
         }
 
@@ -100,11 +99,10 @@ public class SingleResponsibilityCheck implements PrincipleCheck {
         if (publicMethodCount > maxPublicMethods) {
             issues.add(new LintIssue(
                 getName(),
-                LintIssue.Severity.WARNING,
+                Severity.WARNING,
                 "Class has " + publicMethodCount + " public methods (recommended max: " + maxPublicMethods + "). " +
                 "The public interface is too large. " +
-                "Consider using the Interface Segregation Principle to split the interface.",
-                className
+                "Consider using the Interface Segregation Principle to split the interface."
             ));
         }
 
@@ -112,11 +110,10 @@ public class SingleResponsibilityCheck implements PrincipleCheck {
         if (fieldCount > maxFields && methodCount > maxMethods) {
             issues.add(new LintIssue(
                 getName(),
-                LintIssue.Severity.ERROR,
+                Severity.ERROR,
                 "Class appears to be a 'God Class' with " + fieldCount + " fields and " + methodCount + " methods. " +
                 "This strongly suggests multiple responsibilities. " +
-                "Refactor by identifying distinct responsibilities and extracting them into separate classes.",
-                className
+                "Refactor by identifying distinct responsibilities and extracting them into separate classes."
             ));
         }
 

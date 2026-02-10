@@ -15,4 +15,16 @@ public class MethodCall {
         this.name = name;
         this.desc = desc;
     }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
 }

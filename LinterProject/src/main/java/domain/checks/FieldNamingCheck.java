@@ -2,6 +2,7 @@ package domain.checks;
 
 import domain.ClassInfo;
 import domain.FieldInfo;
+import domain.Severity;
 import domain.checks.LintIssue;
 
 import java.util.ArrayList;
@@ -57,13 +58,12 @@ public class FieldNamingCheck implements StyleCheck {
                 if (!UPPER_SNAKE_CASE.matcher(fieldName).matches()) {
                     issues.add(new LintIssue(
                         getName(),
-                        LintIssue.Severity.WARNING,
+                        Severity.WARNING,
                         String.format(
                             "Constant '%s' should be UPPER_SNAKE_CASE (e.g., MAX_VALUE, DEFAULT_SIZE). " +
-                            "Java convention: constants use uppercase letters with underscores.",
-                            fieldName
-                        ),
-                        location
+                            "Java convention: constants use uppercase letters with underscores in %s",
+                            fieldName, location
+                        )
                     ));
                 }
             } else {
@@ -74,12 +74,11 @@ public class FieldNamingCheck implements StyleCheck {
                     
                     issues.add(new LintIssue(
                         getName(),
-                        LintIssue.Severity.WARNING,
+                        Severity.WARNING,
                         String.format(
-                            "Field '%s' should be camelCase (e.g., firstName, totalCount). %s",
-                            fieldName, suggestion
-                        ),
-                        location
+                            "Field '%s' should be camelCase (e.g., firstName, totalCount). %s in %s",
+                            fieldName, suggestion, location
+                        )
                     ));
                 }
             }
