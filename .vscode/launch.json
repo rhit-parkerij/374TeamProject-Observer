@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "LinterDisplay",
+            "request": "launch",
+            "mainClass": "presentation.LinterDisplay",
+            "projectName": ""
+        },
+        {
+            "type": "java",
+            "name": "Run LinterDisplay",
+            "request": "launch",
+            "mainClass": "presentation.LinterDisplay",
+            "projectName": "LinterProject",
+            "cwd": "${workspaceFolder}/LinterProject"
+        },
+        {
+            "type": "java",
+            "name": "Run LinterDisplay with Args",
+            "request": "launch",
+            "mainClass": "presentation.LinterDisplay",
+            "projectName": "LinterProject",
+            "cwd": "${workspaceFolder}/LinterProject",
+            "args": "domain.LinterEngine"
+        }
+    ]
+}
+

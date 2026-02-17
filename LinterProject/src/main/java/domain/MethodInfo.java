@@ -2,6 +2,7 @@ package domain;
 
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.Opcodes;
@@ -96,5 +97,28 @@ public class MethodInfo {
 
     public MethodNode getMethodNode() {
         return methodNode;
+    }
+
+    /**
+     * Get all field names accessed (read or write) within this method
+     * that belong to the specified class.
+     * Used by LCOM4 cohesion analysis.
+     *
+     * @param ownerInternalName the internal name of the class (e.g. "domain/MyClass")
+     * @return set of field names accessed by this method
+     */
+    public java.util.Set<String> getAccessedFields(String ownerInternalName) {
+        java.util.Set<String> accessed = new java.util.HashSet<>();
+        for (int i = 0; i < methodNode.instructions.size(); i++) {
+            AbstractInsnNode insn = methodNode.instructions.get(i);
+            if (insn instanceof FieldInsnNode) {
+                FieldInsnNode fieldInsn = (FieldInsnNode) insn;
+                // Only count fields that belong to the class itself
+                if (fieldInsn.owner.equals(ownerInternalName)) {
+                    accessed.add(fieldInsn.name);
+                }
+            }
+        }
+        return accessed;
     }
 }
