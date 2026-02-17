@@ -1,7 +1,5 @@
 domain\checks\TemplateMethodDetector.class
 domain\checks\PatternCheck.class
-domain\checks\AdapterPatternCheck.class
-domain\CheckFilter.class
 domain\MethodInfo.class
 domain\checks\LintCheck.class
 domain\LinterEngine.class
@@ -12,6 +10,7 @@ presentation\LinterDisplay.class
 domain\checks\ConfigurableMethodLengthCheck.class
 domain\CheckCategory.class
 domain\checks\FieldNamingCheck.class
+domain\ResultManager$1.class
 domain\ClassInfo.class
 domain\FieldInfo.class
 domain\checks\LintIssue.class

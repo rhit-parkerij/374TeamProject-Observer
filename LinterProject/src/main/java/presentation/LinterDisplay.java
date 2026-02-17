@@ -52,13 +52,17 @@ public class LinterDisplay {
         // STYLE CHECKS
         checks.add(new ConfigurableMethodLengthCheck());
         checks.add(new FieldNamingCheck());
+        checks.add(new UnusedVariableCheck());
         // PRINCIPLE CHECKS
         checks.add(new ProgramToInterfaceCheck());
         checks.add(new SingleResponsibilityCheck());
+        checks.add(new OpenClosePrincipleCheck());
+        checks.add(new LeastKnowledgeCheck());
         // PATTERN DETECTORS
         checks.add(new AdapterPatternDetector());
         checks.add(new TemplateMethodDetector());
         checks.add(new StrategyPatternDetector());
+        checks.add(new DecoratorPatternDetector());
         return checks;
     }
 
