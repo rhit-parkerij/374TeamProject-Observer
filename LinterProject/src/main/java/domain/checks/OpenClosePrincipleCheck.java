@@ -27,7 +27,7 @@ import java.util.Set;
  *
  * @author Isaac Parker
  */
-public class OpenClosePrincipleCheck implements PatternCheck {
+public class OpenClosePrincipleCheck implements PrincipleCheck {
 
     @Override
     public String getName() {
@@ -55,7 +55,7 @@ public class OpenClosePrincipleCheck implements PatternCheck {
         return issues;
     }
 
-    @Override
+    
     public List<LintIssue> checkWithContext(ClassInfo classInfo, Map<String, ClassInfo> allClasses) {
         List<LintIssue> issues = new ArrayList<>();
         if (classInfo == null || allClasses == null) return issues;
