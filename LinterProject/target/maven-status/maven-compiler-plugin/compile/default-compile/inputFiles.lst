@@ -8,7 +8,9 @@ C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\ClassInfo.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\LintIssue.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\demo\Demo_InterfaceViolation.java
+C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\demo\Demo_GodClass.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\FieldNamingCheck.java
+C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\demo\Demo_TemplateMethodPossible.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\LinterEngine.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\OpenClosePrincipleCheck.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\SingleResponsibilityCheck.java
@@ -26,12 +28,17 @@ C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\demo\Demo_LongMethodViolation.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\adapter\DebugMediaAdapter.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\adapter\TestAdapterDetection.java
+C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\demo\Demo_FieldNamingViolation.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\demo\Demo_InterfaceGood.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\Severity.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\adapter\MediaPlayer.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\MethodInfo.java
+C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\demo\Demo_HighCohesion.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\LintSummary.java
+C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\demo\Demo_TemplateMethodGood.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\StyleCheck.java
+C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\demo\Demo_FieldNamingGood.java
+C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\test\demo\TestWenxinCheckers.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\StrategyPatternDetector.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\ResultManager.java
 C:\Users\huangw5\Downloads\CSSE374\Project\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\PrincipleCheck.java

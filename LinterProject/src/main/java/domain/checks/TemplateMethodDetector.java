@@ -66,8 +66,9 @@ public class TemplateMethodDetector implements PatternCheck {
                     issues.add(new LintIssue(
                         getName(),
                         Severity.INFO,
-                        String.format("Template Method pattern detected: '%s' is a template method calling abstract steps: %s in %s",
-                            method.getName(), calledAbstractMethods), classInfo.getName() + "." + method.getName() + "()"
+                        String.format("Template Method pattern detected: '%s' is a template method calling abstract steps: %s",
+                            method.getName(), calledAbstractMethods),
+                        classInfo.getName() + "." + method.getName() + "()"
                     ));
                 }
             }
@@ -90,8 +91,9 @@ public class TemplateMethodDetector implements PatternCheck {
                     issues.add(new LintIssue(
                         getName(),
                         Severity.INFO,
-                        String.format("Possible Template Method pattern: '%s' calls abstract steps: %s (consider making it final) in %s",
-                            method.getName(), calledAbstractMethods), classInfo.getName() + "." + method.getName() + "()"
+                        String.format("Possible Template Method pattern: '%s' calls abstract steps: %s (consider making it final)",
+                            method.getName(), calledAbstractMethods),
+                        classInfo.getName() + "." + method.getName() + "()"
                     ));
                 }
             }

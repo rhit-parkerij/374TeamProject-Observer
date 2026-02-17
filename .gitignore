@@ -21,4 +21,10 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# VS Code - ignore launch configs (personal paths) but keep settings
+.vscode/launch.json
+LinterProject/HOW_TO_RUN.md
 .vscode/settings.json
+.vscode/launch.json
+.vscode/launch.json

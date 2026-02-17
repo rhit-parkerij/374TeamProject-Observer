@@ -61,9 +61,9 @@ public class FieldNamingCheck implements StyleCheck {
                         Severity.WARNING,
                         String.format(
                             "Constant '%s' should be UPPER_SNAKE_CASE (e.g., MAX_VALUE, DEFAULT_SIZE). " +
-                            "Java convention: constants use uppercase letters with underscores in %s",
-                            fieldName, fieldName), location
-                        
+                            "Java convention: constants use uppercase letters with underscores",
+                            fieldName),
+                        location
                     ));
                 }
             } else {
@@ -74,8 +74,9 @@ public class FieldNamingCheck implements StyleCheck {
                         getName(),
                         Severity.WARNING,
                         String.format(
-                            "Field '%s' should be camelCase (e.g., firstName, totalCount). %s in %s",
-                            fieldName), location
+                            "Field '%s' should be camelCase (e.g., firstName, totalCount).",
+                            fieldName),
+                        location
                     ));
                 }
             }

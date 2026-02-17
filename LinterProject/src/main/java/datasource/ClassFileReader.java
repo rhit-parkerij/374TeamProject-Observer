@@ -20,9 +20,42 @@ public class ClassFileReader {
     /**
      * Load a class by its fully qualified name (e.g., "java.lang.String").
      * The class must be on the classpath.
+     * 
+     * This method tries two approaches:
+     * 1. Direct ClassReader(className) - simple and fast (works in normal Java environments)
+     * 2. Manual resource loading - fallback for Maven exec:java and other complex classloader scenarios
      */
     public ClassInfo loadClass(String className) throws IOException {
-        ClassReader reader = new ClassReader(className);
+        ClassReader reader = null;
+        
+        // Approach 1: Try the simple direct method first (works in most cases)
+        try {
+            reader = new ClassReader(className);
+        } catch (IOException e) {
+            // Approach 2: Fallback to manual resource loading
+            // This is needed when running via Maven exec:java or other environments
+            // where the thread context classloader doesn't match the system classloader
+            String resourcePath = className.replace('.', '/') + ".class";
+            
+            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
+            if (is == null) {
+                is = ClassLoader.getSystemResourceAsStream(resourcePath);
+            }
+            if (is == null) {
+                is = ClassFileReader.class.getClassLoader().getResourceAsStream(resourcePath);
+            }
+            if (is == null) {
+                throw new IOException("Class not found: " + className + " (tried both direct loading and resource path: " + resourcePath + ")", e);
+            }
+            
+            try {
+                reader = new ClassReader(is);
+            } finally {
+                is.close();
+            }
+        }
+        
+        // Parse the class bytecode into ClassNode
         ClassNode classNode = new ClassNode();
         reader.accept(classNode, ClassReader.EXPAND_FRAMES);
         return new ClassInfo(classNode);
