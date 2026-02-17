@@ -1,7 +1,6 @@
 package domain.checks;
 
 import domain.ClassInfo;
-import domain.FieldInfo;
 import domain.MethodInfo;
 import domain.Severity;
 
@@ -11,9 +10,8 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 public class ImproperPrintingCheck implements StyleCheck {
 
