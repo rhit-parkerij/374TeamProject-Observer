@@ -1,3 +1,7 @@
+# Maven build output (generated artifacts, never commit)
+target/
+**/target/
+
 # Compiled class file
 *.class
 
