@@ -60,23 +60,9 @@ public class ConsoleReporter {
     }
 
     private void printIssue(LintIssue issue) {
-        // String prefix = getPrefix(issue.getSeverity());
         System.out.println(" [" + issue.getCheckName() + "] " + issue.getMessage());
         System.out.println("   at " + issue.getLocation());
     }
-
-    // private String getPrefix(Severity severity) {
-    //     switch (severity) {
-    //         case ERROR:
-    //             return "ERROR";
-    //         case WARNING:
-    //             return "WARNING";
-    //         case INFO:
-    //             return "INFO";
-    //         default:
-    //             return " ";
-    //     }
-    // }
 
     private void printSummary(Map<Severity, List<LintIssue>> bySeverity) {
         int errors = bySeverity.getOrDefault(Severity.ERROR, List.of()).size();

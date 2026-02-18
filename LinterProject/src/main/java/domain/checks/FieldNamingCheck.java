@@ -69,13 +69,13 @@ public class FieldNamingCheck implements StyleCheck {
             } else {
                 // Regular fields should be camelCase
                 if (!CAMEL_CASE.matcher(fieldName).matches()) {
-                    
+                    String suggestion = getSuggestion(fieldName);
                     issues.add(new LintIssue(
                         getName(),
                         Severity.WARNING,
                         String.format(
-                            "Field '%s' should be camelCase (e.g., firstName, totalCount).",
-                            fieldName),
+                            "Field '%s' should be camelCase (e.g., firstName, totalCount). %s",
+                            fieldName, suggestion),
                         location
                     ));
                 }

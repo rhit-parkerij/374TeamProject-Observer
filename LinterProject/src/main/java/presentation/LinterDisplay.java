@@ -46,25 +46,38 @@ public class LinterDisplay {
 
     /**
      * Create all available checks (used for interactive selection).
+     *
+     * Design Note: Each check is instantiated here. To follow the Open-Closed
+     * Principle more strictly, a registry or service-loader approach could be
+     * used so that new checks can be added without modifying this method.
+     * For this project scope, we group checks by category for clarity.
      */
     private List<LintCheck> createAllChecks() {
         List<LintCheck> checks = new ArrayList<>();
         // STYLE CHECKS
-        checks.add(new ConfigurableMethodLengthCheck());
-        checks.add(new FieldNamingCheck());
-        checks.add(new UnusedVariableCheck());
-        checks.add(new MethodNamingCheck());
+        addCheck(checks, new ConfigurableMethodLengthCheck());
+        addCheck(checks, new FieldNamingCheck());
+        addCheck(checks, new UnusedVariableCheck());
+        addCheck(checks, new MethodNamingCheck());
         // PRINCIPLE CHECKS
-        checks.add(new ProgramToInterfaceCheck());
-        checks.add(new SingleResponsibilityCheck());
-        checks.add(new OpenClosePrincipleCheck());
-        checks.add(new LeastKnowledgeCheck());
+        addCheck(checks, new ProgramToInterfaceCheck());
+        addCheck(checks, new SingleResponsibilityCheck());
+        addCheck(checks, new OpenClosePrincipleCheck());
+        addCheck(checks, new LeastKnowledgeCheck());
         // PATTERN DETECTORS
-        checks.add(new AdapterPatternDetector());
-        checks.add(new TemplateMethodDetector());
-        checks.add(new StrategyPatternDetector());
-        checks.add(new DecoratorPatternDetector());
+        addCheck(checks, new AdapterPatternDetector());
+        addCheck(checks, new TemplateMethodDetector());
+        addCheck(checks, new StrategyPatternDetector());
+        addCheck(checks, new DecoratorPatternDetector());
         return checks;
+    }
+
+    /**
+     * Helper to add a check to the list. Provides a single point of extension
+     * for future features like logging, validation, or dependency injection.
+     */
+    private void addCheck(List<LintCheck> checks, LintCheck check) {
+        checks.add(check);
     }
 
     /**
@@ -285,20 +298,23 @@ public class LinterDisplay {
         printRegisteredChecks();
         System.out.println("Analyzing " + classes.size() + " class(es)...\n");
 
-        // Clear previous results
-        ResultManager localResult = new ResultManager();
-
-        for (ClassInfo classInfo : classes) {
-            // Show ASM details if enabled
-            if (showAsmDetails) {
+        // Show ASM details if enabled
+        if (showAsmDetails) {
+            for (ClassInfo classInfo : classes) {
                 printAsmDetails(classInfo);
             }
-
-            List<LintIssue> issues = engine.analyze(classInfo);
-            localResult.addResult(classInfo.getName(), issues);
         }
 
-        reporter.report(localResult.getAllIssues());
+        // Use analyzeAll so PatternChecks get access to all classes via checkWithContext
+        List<LintIssue> allIssues = engine.analyzeAll(classes);
+
+        // Store results per class for result management
+        ResultManager localResult = new ResultManager();
+        for (LintIssue issue : allIssues) {
+            localResult.addResult(issue.getLocation(), List.of(issue));
+        }
+
+        reporter.report(allIssues);
     }
 
     // ═══════════════════════════════════════════════════════════════════

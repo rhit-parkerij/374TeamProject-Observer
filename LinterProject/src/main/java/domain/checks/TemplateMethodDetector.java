@@ -36,7 +36,9 @@ public class TemplateMethodDetector implements PatternCheck {
             return issues;
         }
 
-        // Collect abstract method names
+        String internalName = classInfo.getInternalName();
+
+        // Collect abstract method names defined in this class
         Set<String> abstractMethods = new HashSet<>();
         for (MethodInfo method : classInfo.getMethods()) {
             if (method.isAbstract()) {
@@ -48,19 +50,13 @@ public class TemplateMethodDetector implements PatternCheck {
             return issues;
         }
 
-        // Look for final methods that call abstract methods (template methods)
+        // Look for final methods that call this class's own abstract methods (template methods)
         for (MethodInfo method : classInfo.getMethods()) {
             if (method.isFinal() && !method.isAbstract() && 
                 !method.isConstructor() && !method.isStaticInitializer()) {
                 
-                // Check if this final method calls abstract methods
-                Set<String> calledAbstractMethods = new HashSet<>();
-                for (MethodCall call : method.getMethodCalls()) {
-                    // Check if the call is to one of the class's own abstract methods
-                    if (abstractMethods.contains(call.getName())) {
-                        calledAbstractMethods.add(call.getName());
-                    }
-                }
+                Set<String> calledAbstractMethods = findCalledAbstractMethods(
+                        method, abstractMethods, internalName);
 
                 if (calledAbstractMethods.size() >= 2) {
                     issues.add(new LintIssue(
@@ -80,12 +76,8 @@ public class TemplateMethodDetector implements PatternCheck {
             if (!method.isFinal() && !method.isAbstract() && !method.isPrivate() &&
                 !method.isConstructor() && !method.isStaticInitializer()) {
                 
-                Set<String> calledAbstractMethods = new HashSet<>();
-                for (MethodCall call : method.getMethodCalls()) {
-                    if (abstractMethods.contains(call.getName())) {
-                        calledAbstractMethods.add(call.getName());
-                    }
-                }
+                Set<String> calledAbstractMethods = findCalledAbstractMethods(
+                        method, abstractMethods, internalName);
 
                 if (calledAbstractMethods.size() >= 2) {
                     issues.add(new LintIssue(
@@ -100,5 +92,29 @@ public class TemplateMethodDetector implements PatternCheck {
         }
 
         return issues;
+    }
+
+    /**
+     * Find which of the class's own abstract methods are called by the given method.
+     * Only counts calls where the owner matches the class itself (prevents false positives
+     * from calls to other classes that happen to have methods with the same name).
+     *
+     * @param method           the concrete method to inspect
+     * @param abstractMethods  set of abstract method names in the class
+     * @param classInternalName internal name of the class (e.g. "test/demo/MyClass")
+     * @return set of abstract method names called by this method
+     */
+    private Set<String> findCalledAbstractMethods(MethodInfo method,
+                                                   Set<String> abstractMethods,
+                                                   String classInternalName) {
+        Set<String> called = new HashSet<>();
+        for (MethodCall call : method.getMethodCalls()) {
+            // Only count calls targeting this class's own abstract methods
+            if (call.getOwner().equals(classInternalName)
+                    && abstractMethods.contains(call.getName())) {
+                called.add(call.getName());
+            }
+        }
+        return called;
     }
 }
