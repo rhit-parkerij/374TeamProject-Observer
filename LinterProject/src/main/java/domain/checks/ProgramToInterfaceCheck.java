@@ -90,12 +90,13 @@ public class ProgramToInterfaceCheck implements PrincipleCheck {
                 ));
             }
 
-            // Check parameter types
+            // Check parameter types (deduplicate same type appearing multiple times)
+            Set<String> reportedParams = new HashSet<>();
             for (String paramType : method.getParameterTypeNames()) {
-                if (IMPLEMENTATION_TO_INTERFACE.containsKey(paramType)) {
+                if (IMPLEMENTATION_TO_INTERFACE.containsKey(paramType) && !reportedParams.contains(paramType)) {
                     String preferredInterface = IMPLEMENTATION_TO_INTERFACE.get(paramType);
                     String location = classInfo.getName() + "." + method.getName() + "()";
-                    
+                    reportedParams.add(paramType);
                     issues.add(new LintIssue(
                         getName(),
                         Severity.WARNING,
