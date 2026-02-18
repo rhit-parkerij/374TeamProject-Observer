@@ -4,6 +4,7 @@ import datasource.ClassFileReader;
 import domain.ClassInfo;
 import domain.FieldInfo;
 import domain.MethodInfo;
+import domain.LinterConfig;
 import domain.LinterEngine;
 import domain.ResultManager;
 import domain.checks.*;
@@ -29,12 +30,16 @@ public class LinterDisplay {
     private final Scanner scanner;
     private boolean showAsmDetails = false;
 
+    // Shared configuration for tunable rules (injected into checks)
+    private final LinterConfig linterConfig;
+
     // All available checks (for enable/disable selection)
     private final List<LintCheck> allChecks;
     private final boolean[] checkEnabled;
 
     public LinterDisplay() {
         this.reader = new ClassFileReader();
+        this.linterConfig = new LinterConfig();  // loads from properties file
         this.allChecks = createAllChecks();
         this.checkEnabled = new boolean[allChecks.size()];
         Arrays.fill(checkEnabled, true); // all enabled by default
@@ -49,8 +54,8 @@ public class LinterDisplay {
      */
     private List<LintCheck> createAllChecks() {
         List<LintCheck> checks = new ArrayList<>();
-        // STYLE CHECKS
-        checks.add(new ConfigurableMethodLengthCheck());
+        // STYLE CHECKS (inject shared LinterConfig into configurable checks)
+        checks.add(new ConfigurableMethodLengthCheck(linterConfig));
         checks.add(new FieldNamingCheck());
         checks.add(new UnusedVariableCheck());
         checks.add(new MethodNamingCheck());
@@ -114,6 +119,7 @@ public class LinterDisplay {
             System.out.println("║  4. Configure checks (enable / disable)                    ║");
             System.out.println("║  5. Toggle ASM detail display  [" + (showAsmDetails ? "ON " : "OFF") + "]                       ║");
             System.out.println("║  6. Show current configuration                             ║");
+            System.out.println("║  7. Tune method-length thresholds at runtime               ║");
             System.out.println("║  0. Exit                                                   ║");
             System.out.println("╚════════════════════════════════════════════════════════════╝");
             System.out.print("Select an option: ");
@@ -139,6 +145,9 @@ public class LinterDisplay {
                     break;
                 case "6":
                     printCurrentConfig();
+                    break;
+                case "7":
+                    handleThresholdTuning();
                     break;
                 case "0":
                     System.out.println("Goodbye!");
@@ -395,6 +404,11 @@ public class LinterDisplay {
         System.out.println("\n═══════════════ CURRENT CONFIGURATION ═══════════════");
         System.out.println("ASM Detail Display : " + (showAsmDetails ? "ON" : "OFF"));
         System.out.println();
+        System.out.println("Tunable Rules (via LinterConfig):");
+        System.out.println("  Config source          : " + linterConfig.getConfigSource());
+        System.out.println("  Method length WARNING  : " + linterConfig.getMethodLengthWarningThreshold());
+        System.out.println("  Method length ERROR    : " + linterConfig.getMethodLengthErrorThreshold());
+        System.out.println();
         System.out.println("Checks:");
         for (int i = 0; i < allChecks.size(); i++) {
             LintCheck check = allChecks.get(i);
@@ -403,6 +417,61 @@ public class LinterDisplay {
             System.out.printf("  %d. [%s] [%s] %s%n", i + 1, status, category, check.getName());
         }
         System.out.println("════════════════════════════════════════════════════\n");
+    }
+
+    // ─── Option 7: tune method-length thresholds at runtime ────────
+
+    private void handleThresholdTuning() {
+        System.out.println("\n─────────── TUNE METHOD-LENGTH THRESHOLDS ───────────");
+        System.out.println("  Current WARNING threshold : " + linterConfig.getMethodLengthWarningThreshold());
+        System.out.println("  Current ERROR   threshold : " + linterConfig.getMethodLengthErrorThreshold());
+        System.out.println("  Config source             : " + linterConfig.getConfigSource());
+        System.out.println("─────────────────────────────────────────────────────");
+        System.out.println("  Options:");
+        System.out.println("    1. Set new thresholds");
+        System.out.println("    2. Reload from properties file");
+        System.out.println("    3. Reset to defaults (warning=50, error=100)");
+        System.out.println("    0. Back");
+        System.out.print("> ");
+
+        String choice = scanner.nextLine().trim();
+
+        switch (choice) {
+            case "1":
+                setNewThresholds();
+                break;
+            case "2":
+                linterConfig.loadFromFile();
+                System.out.println("Reloaded from properties file.");
+                System.out.println("  WARNING threshold : " + linterConfig.getMethodLengthWarningThreshold());
+                System.out.println("  ERROR   threshold : " + linterConfig.getMethodLengthErrorThreshold());
+                break;
+            case "3":
+                linterConfig.resetToDefaults();
+                System.out.println("Reset to defaults: WARNING=50, ERROR=100");
+                break;
+            case "0":
+                break;
+            default:
+                System.out.println("Invalid option.");
+        }
+    }
+
+    private void setNewThresholds() {
+        try {
+            System.out.print("  Enter new WARNING threshold: ");
+            int warning = Integer.parseInt(scanner.nextLine().trim());
+            System.out.print("  Enter new ERROR threshold: ");
+            int error = Integer.parseInt(scanner.nextLine().trim());
+
+            linterConfig.setMethodLengthThresholds(warning, error);
+            System.out.println("  Thresholds updated: WARNING=" + warning + ", ERROR=" + error);
+            System.out.println("  These changes take effect on the next analysis run.");
+        } catch (NumberFormatException e) {
+            System.out.println("  Invalid number. Thresholds not changed.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("  " + e.getMessage());
+        }
     }
 
     private String getCheckCategory(LintCheck check) {

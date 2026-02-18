@@ -92,10 +92,29 @@ package "Domain" #LightGreen {
     
     ' Style Checks
     class ConfigurableMethodLengthCheck implements StyleCheck {
-        - maxInstructions: int
-        + ConfigurableMethodLengthCheck(maxInstructions: int)
+        - config: LinterConfig
+        + ConfigurableMethodLengthCheck(config: LinterConfig)
+        + ConfigurableMethodLengthCheck(warningThreshold: int, errorThreshold: int)
         + check(classInfo: ClassInfo): List<LintIssue>
-        + setMaxInstructions(max: int): void
+        + getWarningThreshold(): int
+        + getErrorThreshold(): int
+        + getConfig(): LinterConfig
+    }
+
+    class LinterConfig {
+        - methodLengthWarningThreshold: int
+        - methodLengthErrorThreshold: int
+        - configSource: String
+        + LinterConfig()
+        + LinterConfig(warningThreshold: int, errorThreshold: int)
+        + loadFromFile(): void
+        + setMethodLengthWarningThreshold(threshold: int): void
+        + setMethodLengthErrorThreshold(threshold: int): void
+        + setMethodLengthThresholds(warning: int, error: int): void
+        + resetToDefaults(): void
+        + getMethodLengthWarningThreshold(): int
+        + getMethodLengthErrorThreshold(): int
+        + getConfigSource(): String
     }
     
     class FieldNamingCheck implements StyleCheck {
@@ -180,7 +199,10 @@ package "ASM Library" #DDDDDD {
 
 LinterDisplay --> LinterEngine
 LinterDisplay --> ConsoleReporter
+LinterDisplay --> LinterConfig
 ConsoleReporter ..> LintIssue
+
+ConfigurableMethodLengthCheck --> LinterConfig
 
 LinterEngine --> ClassFileReader
 LinterEngine --> ResultManager

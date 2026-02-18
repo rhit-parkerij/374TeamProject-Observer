@@ -8,6 +8,7 @@ C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\do
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\LeastKnowledgeCheck.java
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\LintCheck.java
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\LintIssue.java
+C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\MethodNamingCheck.java
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\OpenClosePrincipleCheck.java
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\PatternCheck.java
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\PrincipleCheck.java
@@ -19,6 +20,7 @@ C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\do
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\checks\UnusedVariableCheck.java
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\ClassInfo.java
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\FieldInfo.java
+C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\LinterConfig.java
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\LinterEngine.java
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\LintSummary.java
 C:\Users\yangr4\Downloads\374TeamProject-Observer\LinterProject\src\main\java\domain\MethodCall.java

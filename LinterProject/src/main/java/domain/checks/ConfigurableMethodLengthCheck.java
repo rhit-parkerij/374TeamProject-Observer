@@ -1,94 +1,83 @@
 package domain.checks;
 
 import domain.ClassInfo;
+import domain.LinterConfig;
 import domain.MethodInfo;
 import domain.Severity;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Style Check: Configurable Method Length Check
  * Checks if a method's length (number of instructions) exceeds a configurable limit.
  *
- * Instead of hardcoding the threshold, this check reads from a configuration file
- * (linter-config.properties) to determine the warning and error limits.
- * Users can also override thresholds via constructor parameters.
+ * Instead of hardcoding the threshold, this check receives a {@link LinterConfig}
+ * object via Dependency Injection. The config loads settings from a properties file
+ * and also supports runtime user overrides.
+ *
+ * Thresholds are read from the injected LinterConfig every time {@code check()} runs,
+ * so runtime changes take effect immediately without rebuilding the check.
  *
  * ASM Implementation: methodNode.instructions.size() > config.limit
+ *
+ * Design concepts:
+ *   - Dependency Injection: LinterConfig is injected, not created internally
+ *   - Strategy Pattern: this check is one of many interchangeable LintCheck strategies
+ *   - Open-Closed: thresholds can be changed without modifying this class
  *
  * @author Sophia
  */
 public class ConfigurableMethodLengthCheck implements StyleCheck {
 
-    private static final String CONFIG_FILE = "linter-config.properties";
-    private static final int DEFAULT_WARNING_THRESHOLD = 50;
-    private static final int DEFAULT_ERROR_THRESHOLD = 100;
-
-    private final int warningThreshold;
-    private final int errorThreshold;
+    private final LinterConfig config;
 
     /**
-     * Create a check that reads thresholds from the configuration file.
-     * If the config file is not found or missing keys, defaults are used.
-     *   - method.length.warning.threshold (default: 50)
-     *   - method.length.error.threshold   (default: 100)
+     * Create a check with an injected LinterConfig.
+     * The config determines the warning and error thresholds.
+     * Thresholds are read live from the config on each check() call,
+     * so runtime changes take effect immediately.
+     *
+     * @param config the shared LinterConfig instance
      */
-    public ConfigurableMethodLengthCheck() {
-        Properties props = loadConfig();
-        this.warningThreshold = getIntProperty(props, "method.length.warning.threshold", DEFAULT_WARNING_THRESHOLD);
-        this.errorThreshold   = getIntProperty(props, "method.length.error.threshold",   DEFAULT_ERROR_THRESHOLD);
+    public ConfigurableMethodLengthCheck(LinterConfig config) {
+        this.config = config;
     }
 
     /**
-     * Create a check with explicit thresholds (overrides config file).
-     * Useful for testing or interactive user input.
+     * Convenience constructor: creates with a default LinterConfig
+     * (loads from properties file, falls back to built-in defaults).
+     */
+    public ConfigurableMethodLengthCheck() {
+        this(new LinterConfig());
+    }
+
+    /**
+     * Create a check with explicit thresholds (for quick testing).
      *
      * @param warningThreshold instruction count to trigger a WARNING
      * @param errorThreshold   instruction count to trigger an ERROR
      */
     public ConfigurableMethodLengthCheck(int warningThreshold, int errorThreshold) {
-        this.warningThreshold = warningThreshold;
-        this.errorThreshold   = errorThreshold;
-    }
-
-    // ─── Config loading ──────────────────────────────────────────
-
-    private Properties loadConfig() {
-        Properties props = new Properties();
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE)) {
-            if (is != null) {
-                props.load(is);
-            }
-        } catch (IOException e) {
-            // Silently fall back to defaults
-        }
-        return props;
-    }
-
-    private int getIntProperty(Properties props, String key, int defaultValue) {
-        String value = props.getProperty(key);
-        if (value != null) {
-            try {
-                return Integer.parseInt(value.trim());
-            } catch (NumberFormatException e) {
-                // Invalid number in config, use default
-            }
-        }
-        return defaultValue;
+        this(new LinterConfig(warningThreshold, errorThreshold));
     }
 
     // ─── Getters (for display / testing) ─────────────────────────
 
     public int getWarningThreshold() {
-        return warningThreshold;
+        return config.getMethodLengthWarningThreshold();
     }
 
     public int getErrorThreshold() {
-        return errorThreshold;
+        return config.getMethodLengthErrorThreshold();
+    }
+
+    /**
+     * Returns the injected LinterConfig so the presentation layer
+     * can modify thresholds at runtime.
+     */
+    public LinterConfig getConfig() {
+        return config;
     }
 
     // ─── LintCheck interface ─────────────────────────────────────
@@ -102,12 +91,16 @@ public class ConfigurableMethodLengthCheck implements StyleCheck {
     public String getDescription() {
         return String.format(
             "Checks if a method exceeds a configurable instruction limit (warning=%d, error=%d)",
-            warningThreshold, errorThreshold);
+            getWarningThreshold(), getErrorThreshold());
     }
 
     @Override
     public List<LintIssue> check(ClassInfo classInfo) {
         List<LintIssue> issues = new ArrayList<>();
+
+        // Read thresholds live from config (supports runtime changes)
+        int warningThreshold = config.getMethodLengthWarningThreshold();
+        int errorThreshold   = config.getMethodLengthErrorThreshold();
 
         for (MethodInfo method : classInfo.getMethods()) {
             // Skip constructors and static initializers
