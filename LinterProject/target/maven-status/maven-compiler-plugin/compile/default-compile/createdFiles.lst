@@ -19,6 +19,7 @@ domain\checks\ImproperPrintingCheck.class
 test\demo\Demo_HighCohesion.class
 domain\checks\DecoratorPatternDetector.class
 domain\checks\LintIssue.class
+domain\checks\MethodNamingCheck.class
 test\demo\Demo_InterfaceGood.class
 domain\ResultManager.class
 test\demo\FileProcessor.class

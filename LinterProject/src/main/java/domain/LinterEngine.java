@@ -2,7 +2,6 @@ package domain;
 
 import domain.checks.LintCheck;
 import domain.checks.LintIssue;
-import domain.checks.PatternCheck;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,31 +61,29 @@ public class LinterEngine {
 
     /**
      * Run all registered checks on multiple classes.
+     * 
+     * Uses checkWithContext() for every check — checks that need
+     * cross-class analysis override this method; others fall back
+     * to the default single-class check(). This avoids instanceof
+     * checks and follows the Hollywood Principle.
+     *
      * @param classes The classes to analyze
      * @return All issues found by all checks
      */
     public List<LintIssue> analyzeAll(List<ClassInfo> classes) {
         List<LintIssue> allIssues = new ArrayList<>();
         
-        // First, register all classes so pattern checks can look up dependencies
+        // Register all classes so cross-class checks can look up dependencies
         classRegistry.clear();
         for (ClassInfo classInfo : classes) {
             classRegistry.put(classInfo.getName(), classInfo);
         }
         
-        // Then run all checks
+        // Run all checks — no instanceof needed thanks to default method in LintCheck
         for (ClassInfo classInfo : classes) {
             for (LintCheck check : checks) {
-                // If it's a pattern check, give it access to all classes
-                if (check instanceof PatternCheck) {
-                    PatternCheck patternCheck = (PatternCheck) check;
-                    List<LintIssue> issues = patternCheck.checkWithContext(classInfo, classRegistry);
-                    allIssues.addAll(issues);
-                } else {
-                    // Regular checks only see one class at a time
-                    List<LintIssue> issues = check.check(classInfo);
-                    allIssues.addAll(issues);
-                }
+                List<LintIssue> issues = check.checkWithContext(classInfo, classRegistry);
+                allIssues.addAll(issues);
             }
         }
         

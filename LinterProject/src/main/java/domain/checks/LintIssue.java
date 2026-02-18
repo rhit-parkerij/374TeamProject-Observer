@@ -3,9 +3,9 @@ package domain.checks;
 import domain.Severity;
 
 public class LintIssue {
-    String checkName;
-    Severity severity;
-    String message;
+    private final String checkName;
+    private final Severity severity;
+    private final String message;
     private final String location;
 
     public LintIssue(String checkName, Severity severity, String message, String location){
