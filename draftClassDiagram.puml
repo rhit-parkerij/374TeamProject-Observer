@@ -104,8 +104,19 @@ package "Domain" #LightGreen {
         + check(classInfo: ClassInfo): List<LintIssue>
     }
     
-    class Style3 implements StyleCheck
-    class Style4 implements StyleCheck
+    class UnusedVariableCheck implements StyleCheck {
+        + check(classInfo: ClassInfo): List<LintIssue>
+        - checkUnusedLocalVariables(classInfo: ClassInfo, issues: List<LintIssue>): void
+        - checkUnusedPrivateFields(classInfo: ClassInfo, issues: List<LintIssue>): void
+        - isMethodParameter(methodNode: MethodNode, index: int, isStatic: boolean): boolean
+        - isLoadOpcode(opcode: int): boolean
+    }
+
+    class MethodNamingCheck implements StyleCheck {
+        - CAMEL_CASE: Pattern
+        + check(classInfo: ClassInfo): List<LintIssue>
+        - getSuggestion(name: String): String
+    }
     
     ' Principle Checks
     class ProgramToInterfaceCheck implements PrincipleCheck {
@@ -121,7 +132,12 @@ package "Domain" #LightGreen {
         + check(classInfo: ClassInfo): List<LintIssue>
     }
     
-    class Principle3 implements PrincipleCheck
+    class LeastKnowledgeCheck implements PrincipleCheck {
+        + check(classInfo: ClassInfo): List<LintIssue>
+        - checkMethodForChaining(classInfo: ClassInfo, methodInfo: MethodInfo, issues: List<LintIssue>): void
+        - isTrainWreck(firstCall: MethodInsnNode, secondCall: MethodInsnNode): boolean
+        - isFluentSafeType(typeName: String): boolean
+    }
     class Principle4 implements PrincipleCheck
     
     ' Pattern Detectors
@@ -138,7 +154,12 @@ package "Domain" #LightGreen {
         - findTemplateMethods(classInfo: ClassInfo): List<String>
     }
     
-    class Pattern3 implements PatternCheck
+    class DecoratorPatternDetector implements PatternCheck {
+        + check(classInfo: ClassInfo): List<LintIssue>
+        - detectDecorator(classInfo: ClassInfo, allClasses: Map): List<LintIssue>
+        - countDelegationsTo(classInfo: ClassInfo, fieldType: String): int
+        - getSimpleName(fullName: String): String
+    }
     class Pattern4 implements PatternCheck
 }
 

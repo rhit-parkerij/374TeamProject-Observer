@@ -53,6 +53,7 @@ public class LinterDisplay {
         checks.add(new ConfigurableMethodLengthCheck());
         checks.add(new FieldNamingCheck());
         checks.add(new UnusedVariableCheck());
+        checks.add(new MethodNamingCheck());
         // PRINCIPLE CHECKS
         checks.add(new ProgramToInterfaceCheck());
         checks.add(new SingleResponsibilityCheck());
