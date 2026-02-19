@@ -11,27 +11,27 @@ import java.util.stream.Collectors;
 /**
  * Principle Check: Single Responsibility Check (Enhanced with LCOM4)
  *
- * <p>Basic detection: flags God Classes with too many methods/fields.
+ * Basic detection: flags God Classes with too many methods/fields.
  *
- * <p><b>A-Level Feature: LCOM4 Cohesion Analysis</b>
+ * A-Level Feature: LCOM4 Cohesion Analysis
  * Uses the LCOM4 metric (Henderson-Sellers, 1996) to measure class cohesion
  * via graph connectivity. The algorithm builds an undirected graph where nodes
  * are methods and edges connect methods that share at least one instance field.
  * The number of connected components equals the LCOM4 value.
  *
- * <ul>
- *   <li>LCOM4 = 1 → highly cohesive (good, single responsibility)</li>
- *   <li>LCOM4 &gt; 1 → class can potentially be split into LCOM4 separate classes</li>
- * </ul>
+ * 
+ *   LCOM4 = 1 → highly cohesive (good, single responsibility)
+ *   LCOM4 > 1 → class can potentially be split into LCOM4 separate classes
+ * 
  *
- * <p><b>Algorithm:</b> Union-Find (Disjoint Set) for connected component counting.
+ * Algorithm: Union-Find (Disjoint Set) for connected component counting.
  *
- * <p><b>Research References:</b>
- * <ol>
- *   <li>Chidamber &amp; Kemerer (1994) - "A Metrics Suite for Object-Oriented Design"</li>
- *   <li>Henderson-Sellers (1996) - "Object-Oriented Metrics: Measures of Complexity"</li>
- *   <li>Hitz &amp; Montazeri (1995) - "Measuring Coupling and Cohesion in OO Systems"</li>
- * </ol>
+ * Research References:
+ * 
+ *   Chidamber &amp; Kemerer (1994) - "A Metrics Suite for Object-Oriented Design"
+ *   Henderson-Sellers (1996) - "Object-Oriented Metrics: Measures of Complexity"
+ *   Hitz &amp; Montazeri (1995) - "Measuring Coupling and Cohesion in OO Systems"
+ * 
  *
  * @author Wenxin
  */
@@ -158,9 +158,13 @@ public class SingleResponsibilityCheck implements PrincipleCheck {
     private List<LintIssue> checkCohesion(ClassInfo classInfo) {
         List<LintIssue> issues = new ArrayList<>();
 
-        // 1. Collect real (non-synthetic, non-constructor) instance methods
+        // 1. Collect real (non-synthetic, non-constructor, non-static) instance methods
+        //    Static methods (like main) don't access instance fields,
+        //    so including them would always create isolated graph nodes
+        //    and inflate the LCOM4 value incorrectly.
         List<MethodInfo> methods = classInfo.getMethods().stream()
                 .filter(m -> !m.isConstructor() && !m.isStaticInitializer())
+                .filter(m -> !m.isStatic())
                 .filter(m -> !m.getName().contains("$"))
                 .filter(m -> !m.isAbstract())
                 .collect(Collectors.toList());
