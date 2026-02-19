@@ -145,11 +145,23 @@ package "Domain" #LightGreen {
     }
     
     class SingleResponsibilityCheck implements PrincipleCheck {
-        - MAX_FIELDS: int 
-        - MAX_METHODS: int
-        - maxPublicMethods: int
+        - maxFields: int
+        - maxMethods: int
+        - lcom4Threshold: int
+        - lcom4Enabled: boolean
         + check(classInfo: ClassInfo): List<LintIssue>
     }
+
+    class "SingleResponsibilityCheck.UnionFind" as UnionFind {
+        - parent: int[]
+        - rank: int[]
+        - components: int
+        + find(x: int): int
+        + union(a: int, b: int): void
+        + getComponents(): int
+    }
+
+    SingleResponsibilityCheck --> UnionFind
     
     class LeastKnowledgeCheck implements PrincipleCheck {
         + check(classInfo: ClassInfo): List<LintIssue>
@@ -169,8 +181,7 @@ package "Domain" #LightGreen {
     
     class TemplateMethodDetector implements PatternCheck {
         + check(classInfo: ClassInfo): List<LintIssue>
-        - findAbstractMethods(classInfo: ClassInfo): Set<String>
-        - findTemplateMethods(classInfo: ClassInfo): List<String>
+        - findCalledAbstractMethods(method, abstractMethods, owner): Set<String>
     }
     
     class DecoratorPatternDetector implements PatternCheck {
