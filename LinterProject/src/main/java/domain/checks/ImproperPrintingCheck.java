@@ -18,7 +18,7 @@ public class ImproperPrintingCheck implements StyleCheck {
     @Override
     public String getName() {
         // Keep as-is if your system expects this name:
-        return "ConsolePrintCheck";
+        return "ImproperPrintingCheck";
         // If you want it to match the class name, change to:
         // return "ImproperPrintingCheck";
     }
@@ -54,18 +54,44 @@ public class ImproperPrintingCheck implements StyleCheck {
 
                 String stream = isOut ? "out" : "err";
 
-                issues.add(new LintIssue(
-                        getName(),
-                        Severity.WARNING,
-                        "Direct console printing detected (System." + stream + "." + printCall.name +
-                                ") in method '" + method.getName() +
-                                "'. Confirm that this is intended for debugging purposes or output.",
-                        classInfo.getName()
-                ));
+                int line = findLineNumber(printCall);
+                if (line < 0) line = findLineNumber(insn);
+
+            String where = sourcePrefix(classInfo, line) + " in " + classInfo.getName() + "#" + method.getName();
+
+            issues.add(new LintIssue(
+                 getName(),
+                  Severity.WARNING,
+                 "Direct console printing detected (System." + stream + "." + printCall.name +
+                ") in method '" + method.getName() +
+                "'. Confirm that this is intended for debugging purposes or output.",
+                      where
+                    ));
             }
         }
 
         return issues;
+    }
+
+    private static int findLineNumber(AbstractInsnNode insn) {
+    // Walk backwards to find the nearest LineNumberNode
+         for (AbstractInsnNode cur = insn; cur != null; cur = cur.getPrevious()) {
+             if (cur instanceof org.objectweb.asm.tree.LineNumberNode ln) {
+                 return ln.line;
+             }
+          }
+         return -1; // no debug info
+    }
+
+    private static String sourcePrefix(ClassInfo classInfo, int line) {
+        String file = null;
+        if (classInfo != null && classInfo.getClassNode() != null) {
+            file = classInfo.getClassNode().sourceFile; // may be null
+        }
+        if (line < 0) {
+            return (file != null ? file : classInfo.getName()) + ":?";
+        }
+        return (file != null ? file : classInfo.getName()) + ":" + line;
     }
 
     private MethodInsnNode findFollowingPrintCall(AbstractInsnNode start, int maxLookahead) {
