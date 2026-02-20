@@ -82,6 +82,15 @@ private List<LintIssue> advancedStrategyCheck(ClassInfo classInfo, Map<String, C
                         ". This strongly suggests a Strategy interface.",
                 iface.getName()
         ));
+    }else{
+        issues.add(new LintIssue(
+                getName(),
+                Severity.WARNING,
+                "Interface '" + iface.getName() + "' has only " + implementers.size() + " implementing class(es) in the analyzed files: " +
+                        String.join(", ", implementers) +
+                        ". This may be a Strategy interface, but either lacks implementation diversity or is not a full Strategy pattern.",
+                iface.getName()
+        ));
     }
 
     return issues;
