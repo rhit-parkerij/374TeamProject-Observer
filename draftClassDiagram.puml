@@ -84,11 +84,15 @@ package "Domain" #LightGreen {
     
     interface LintCheck {
         + check(classInfo: ClassInfo): List<LintIssue>
+        + getName(): String
+        + getDescription(): String
     }
     
     interface StyleCheck extends LintCheck
     interface PrincipleCheck extends LintCheck
-    interface PatternCheck extends LintCheck
+    interface PatternCheck extends LintCheck{
+        +checkWithContext(classInfo: ClassInfo, allClasses: Map<String, ClassInfo>): List<LintIssue>
+    }
     
     ' Style Checks
     class ConfigurableMethodLengthCheck implements StyleCheck {
@@ -122,6 +126,16 @@ package "Domain" #LightGreen {
         - CAMEL_CASE: Pattern
         + check(classInfo: ClassInfo): List<LintIssue>
     }
+
+    class ImproperPrintCheck implements StyleCheck {
+        + check(classInfo: ClassInfo): List<LintIssue>
+        +getName(): String
+        +getDescription(): String
+        -findLineNumber(insn: AbstractInsnNode):int
+        -sourcePrefix(classInfo: ClassInfo, line: int): String
+        -findFollowingPrintCalls(start: AbstractInsnNode, maxLookahead: int): MethodInsnNode
+
+        }
     
     class UnusedVariableCheck implements StyleCheck {
         + check(classInfo: ClassInfo): List<LintIssue>
@@ -169,7 +183,29 @@ package "Domain" #LightGreen {
         - isTrainWreck(firstCall: MethodInsnNode, secondCall: MethodInsnNode): boolean
         - isFluentSafeType(typeName: String): boolean
     }
-    class Principle4 implements PrincipleCheck
+    
+    class OpenClosedPrincipleCheck implements PrincipleCheck {
+        + check(classInfo: ClassInfo): List<LintIssue>
+        +getName(): String
+        +getDescription(): String
+        +checkWithContext(classInfo: ClassInfo, allClasses: Map<String, ClassInfo>): List<LintIssue>
+        - addIfHeavyIssues(classInfo: ClassInfo, issues: List<LintIssue>): void
+        - countConditionalsInMethod(methodInfo: MethodInfo): int
+        - isIfOpcode(op: int): boolean
+        - findImplementingClasses(iface: ClassInfo, allClasses: Map<String, ClassInfo>): List<String>
+    }
+
+    class SecurityPrincipleCheck implements PrincipleCheck {
+        HIGH_ENTROPY_LIKE: Pattern
+        AWS_ACCESS_KEY: Pattern
+        JWT_LIKE: Pattern
+
+        + check(classInfo: ClassInfo): List<LintIssue>
+        +getName(): String
+        +getDescription(): String
+        -detectHardcodedSecrets(classInfo: ClassInfo, methodInfo: MethodInfo, at: AbstractInsnNode, s: String): void
+
+    }
     
     ' Pattern Detectors
     class AdapterPatternDetector implements PatternCheck {
@@ -190,7 +226,19 @@ package "Domain" #LightGreen {
         - countDelegationsTo(classInfo: ClassInfo, fieldType: String): int
         - getSimpleName(fullName: String): String
     }
-    class Pattern4 implements PatternCheck
+    class StrategyPatternDetector implements PatternCheck{
+        +getName(): String
+        +getDescription(): String
+        +check(classInfo: ClassInfo): List<LintIssue>
+        +checkWithContext(classInfo: ClassInfo, allClasses: Map<String, ClassInfo>):
+        -basicStrategyCheck(classInfo: ClassInfo): List<LintIssue>
+        -advancedStrategyCheck(classInfo: ClassInfo, allClasses: Map<String, ClassInfo>): List<LintIssue>
+        -resolveClassStrict(className: String, allClasses: Map<String, ClassInfo>): ClassInfo
+        -stripDescriptor(descriptor: String): String
+        -toInternalName(name: String): String
+        -toDotName(name: String): String
+
+    }
 }
 
 package "Data Source" #LightCoral {
