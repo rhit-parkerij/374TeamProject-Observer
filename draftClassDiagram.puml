@@ -7,6 +7,9 @@ package "Presentation" #LightBlue {
         + main(args: String[]): void
         + run(): void
     }
+    note right of LinterDisplay     
+    This is where we initialize all domain components, and kick off the linting process. Handles inputs and outputs.
+    end note
     
     class ConsoleReporter {
         + report(issues: List<LintIssue>): void
@@ -21,7 +24,11 @@ package "Domain" #LightGreen {
         + removeCheck(check: LintCheck): void
         + analyze(classInfo: ClassInfo): List<LintIssue>
     }
-    
+    note left of LinterEngine
+    This highly represents the Hollywood Principle, as it coordinates the overall linting process and delegates specific checks to the individual LintCheck implementations. 
+    It acts as the central hub that orchestrates the analysis of classes and the collection of linting issues, 
+    while the actual logic for each check is encapsulated within the respective LintCheck implementations.
+    end note
     enum CheckCategory {
         STYLE
         PRINCIPLE
@@ -63,6 +70,7 @@ package "Domain" #LightGreen {
         + getFields(): List<FieldInfo>
         + getMethods(): List<MethodInfo>
     }
+
     
     class FieldInfo {
 
@@ -87,12 +95,21 @@ package "Domain" #LightGreen {
         + getName(): String
         + getDescription(): String
     }
+    note right of LintCheck
+    The LintCheck is where we implement the logic using a Strategy Pattern here. The sub interfaces that extend LintCheck are for categorization and organization, 
+    but the actual logic is implemented in the concrete classes that implement these checks. The sub interfaces each act like a mini strategy pattern.
+    end note
     
     interface StyleCheck extends LintCheck
     interface PrincipleCheck extends LintCheck
     interface PatternCheck extends LintCheck{
         +checkWithContext(classInfo: ClassInfo, allClasses: Map<String, ClassInfo>): List<LintIssue>
     }
+    note left of PatternCheck
+    These sub interfaces allow for Open/Closed Principle adherence, as we can add new checks without modifying existing code. 
+    Each new check can be implemented as a new class that implements the appropriate interface, 
+    and the LinterEngine can work with them through the common LintCheck interface.
+    end note
     
     ' Style Checks
     class ConfigurableMethodLengthCheck implements StyleCheck {
